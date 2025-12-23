@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="个人成长轨迹网站，记录蜕变历程与思想感悟">
+    <meta name="keywords" content="成长, 时间轴, 思想感悟, 相册, 音乐">
+    <title>20·蜕变 - 成长轨迹</title>
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="styles-final.css" as="style">
+    <link rel="preload" href="data.js" as="script">
+    <link rel="preload" href="script-final.js" as="script">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    
+    <!-- 样式表 -->
+    <link rel="stylesheet" href="styles-final.css">
+    <link rel="stylesheet" href="responsive-nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 关键CSS内联样式 -->
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* 导航栏关键样式 */
+        .minimal-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .brand-number {
+            color: #f59e0b;
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover {
+            color: #f59e0b;
+        }
+        
+        .nav-link.active {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+        
+        /* 加载状态样式 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #f59e0b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 隐藏加载状态 */
+        .loading-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载状态覆盖层 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- 响应式导航栏将由JavaScript动态生成 -->
+
+    <!-- 圆形时间轴 -->
+    <section id="timeline" class="circular-timeline-section">
+        <div class="container">
+            <h1 class="section-title">
+                <span class="title-number">20</span>
+                <span class="title-text">成长时间轴</span>
+            </h1>
+            <p class="section-subtitle">点击时间点，探索我的重要时刻</p>
+            
+            <div class="circular-timeline">
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- 圣诞视频播放界面链接 -->
+    <a href="christmas-video.html" id="videoLink" style="display: none;"></a>
+
+    <!-- 简化加载脚本 -->
+    <script>
+        // 页面加载完成后隐藏加载动画
+        window.addEventListener('load', function() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+        });
+        
+        // 简化错误处理
+        window.addEventListener('error', function(e) {
+            console.error('页面错误:', e.error);
+        });
+    </script>
+    
+    <script src="data.js" defer></script>
+    <script src="performance-monitor.js" defer></script>
+    <script src="error-handler.js" defer></script>
+    <script src="responsive-nav.js" defer></script>
+    <script src="script-final.js" defer></script>
+</body>
+</html>

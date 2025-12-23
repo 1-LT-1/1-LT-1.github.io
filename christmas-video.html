@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="圣诞特别视频 - 2025">
+    <meta name="theme-color" content="#dc2626">
+    <title>圣诞视频 - 2025</title>
+    
+    <!-- 预加载视频资源 -->
+    <link rel="preload" href="img/圣诞树.mp4" as="video" type="video/mp4">
+    <link rel="preload" href="img/圣诞祝福.mp4" as="video" type="video/mp4">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            /* 优化渲染性能 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+        
+        #christmasVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #christmasVideo:hover {
+            transform: scale(1.02);
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 3;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 加载提示 */
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        .loading-text.show {
+            opacity: 1;
+        }
+        
+        /* 点击提示 */
+        .click-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* 雪花效果 */
+        .snowflakes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+        
+        /* 视频切换动画 */
+        .video-fade {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">
+        ←
+    </button>
+    
+    <div class="video-container">
+        <video id="christmasVideo" autoplay loop muted>
+            <source src="img/圣诞树.mp4" type="video/mp4">
+            您的浏览器不支持视频播放。
+        </video>
+        <div class="snowflakes" id="snowflakes"></div>
+        <div class="loading-text" id="loadingText">视频加载中...</div>
+        <div class="click-hint" id="clickHint">点击视频播放圣诞祝福</div>
+    </div>
+
+    <script>
+        // 返回主页面
+        function goBack() {
+            window.location.href = 'index-final.html';
+        }
+        
+        // 创建雪花效果
+        function createSnowflakes() {
+            const snowflakesContainer = document.getElementById('snowflakes');
+            const snowflakeCount = 30;
+            
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                
+                // 随机大小 (2-5px)
+                const size = Math.random() * 3 + 2;
+                snowflake.style.width = size + 'px';
+                snowflake.style.height = size + 'px';
+                
+                // 随机位置
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.top = -20 + 'px';
+                
+                // 随机动画时长 (5-10秒)
+                const duration = Math.random() * 5 + 5;
+                snowflake.style.animationDuration = duration + 's';
+                
+                // 随机延迟
+                snowflake.style.animationDelay = Math.random() * 3 + 's';
+                
+                snowflakesContainer.appendChild(snowflake);
+            }
+        }
+        
+        // 视频切换功能
+        function initVideoSwitch() {
+            const video = document.getElementById('christmasVideo');
+            const loadingText = document.getElementById('loadingText');
+            const clickHint = document.getElementById('clickHint');
+            let hasSwitched = false;
+            
+            if (video && loadingText && clickHint) {
+                // 显示加载提示
+                loadingText.classList.add('show');
+                
+                // 视频可以播放时隐藏加载提示
+                video.addEventListener('canplay', function() {
+                    loadingText.classList.remove('show');
+                });
+                
+                // 视频加载错误处理
+                video.addEventListener('error', function() {
+                    loadingText.textContent = '视频加载失败，请检查网络连接';
+                    loadingText.style.background = 'rgba(220, 38, 38, 0.7)';
+                    loadingText.classList.add('show');
+                });
+                
+                // 视频等待时显示加载提示
+                video.addEventListener('waiting', function() {
+                    if (!hasSwitched) {
+                        loadingText.textContent = '视频缓冲中...';
+                        loadingText.classList.add('show');
+                    }
+                });
+                
+                // 视频播放时隐藏加载提示
+                video.addEventListener('playing', function() {
+                    loadingText.classList.remove('show');
+                });
+                
+                // 点击视频切换功能
+                video.addEventListener('click', function() {
+                    if (!hasSwitched) {
+                        hasSwitched = true;
+                        
+                        // 显示切换提示
+                        loadingText.textContent = '正在切换到圣诞祝福...';
+                        loadingText.classList.add('show');
+                        
+                        // 隐藏点击提示
+                        clickHint.style.display = 'none';
+                        
+                        // 切换视频源
+                        setTimeout(() => {
+                            video.src = 'img/圣诞祝福.mp4';
+                            video.load();
+                            
+                            // 重新添加事件监听
+                            video.addEventListener('canplay', function onCanPlay() {
+                                loadingText.classList.remove('show');
+                                video.classList.add('video-fade');
+                                video.play();
+                                video.removeEventListener('canplay', onCanPlay);
+                            });
+                            
+                            video.addEventListener('error', function onError() {
+                                loadingText.textContent = '圣诞祝福视频加载失败';
+                                loadingText.style.background = 'rgba(220, 38, 38, 0.7)';
+                                loadingText.classList.add('show');
+                                video.removeEventListener('error', onError);
+                            });
+                            
+                        }, 500);
+                    }
+                });
+            }
+        }
+        
+        // 页面加载完成后执行
+        window.addEventListener('load', function() {
+            createSnowflakes();
+            initVideoSwitch();
+            
+            // 添加键盘快捷键 - 按ESC返回
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Escape') {
+                    goBack();
+                }
+            });
+            
+            // 触摸设备支持 - 双击返回
+            document.addEventListener('dblclick', function() {
+                goBack();
+            });
+        });
+    </script>
+</body>
+</html>

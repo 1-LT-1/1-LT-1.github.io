@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="个人成长记忆与故事展示页面">
+    <meta name="keywords" content="成长记忆, 故事, 相册, 感悟">
+    <title>记忆与故事 - 成长轨迹</title>
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="data.js" as="script">
+    
+    <!-- CSS样式 -->
+    <link rel="stylesheet" href="responsive-nav.css">
+    <style>
+        /* 基础样式 */
+        :root {
+            --primary-color: #4a6fa5;
+            --primary-light: #6b8cbe;
+            --primary-dark: #2e4a7e;
+            --secondary-color: #f39c12;
+            --accent-color: #e74c3c;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* 响应式导航栏将由JavaScript动态生成 */
+
+        /* 页面头部 */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* 内容区域 */
+        .content-section {
+            margin: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-icon {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        /* 相册网格样式 */
+        .gallery-grid {
+            margin-bottom: 4rem;
+        }
+
+        .section-category {
+            margin-bottom: 3rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .category-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .gallery-item.with-image {
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .gallery-image {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 120px;
+        }
+
+        .gallery-image i {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+
+        .photo-carousel {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .memory-photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .memory-photo.active {
+            opacity: 1;
+        }
+
+        .carousel-controls {
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .carousel-prev,
+        .carousel-next {
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .carousel-prev:hover,
+        .carousel-next:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        .carousel-indicators {
+            display: flex;
+            gap: 4px;
+        }
+
+        .indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.2);
+        }
+
+        .photo-count {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .gallery-caption h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-caption p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* 故事列表样式 */
+        .stories-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .story-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .story-card:hover::before {
+            width: 6px;
+        }
+
+        .story-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .story-title::before {
+            content: '✨';
+            font-size: 1.4rem;
+            position: absolute;
+            left: -1rem;
+            opacity: 0.8;
+        }
+
+        .story-content {
+            color: var(--text-dark);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .story-content p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .story-content p::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .story-highlight {
+            background: linear-gradient(120deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+            border-left: 3px solid var(--primary-color);
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-style: italic;
+            font-weight: 500;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .story-highlight::before {
+            content: '💡';
+            position: absolute;
+            left: -10px;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            padding: 4px;
+            font-size: 0.8rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* 故事卡片交替布局 */
+        .story-card:nth-child(even) {
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+        }
+
+        .story-card:nth-child(even)::before {
+            background: linear-gradient(to bottom, var(--secondary-color), var(--primary-light));
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+                height: 70px;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .content-section {
+                margin: 3rem 0;
+            }
+        }
+
+        /* 滚动条样式 */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        body::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 4px;
+        }
+    </style>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="minimal-nav">
+        <div class="nav-container">
+            <a href="index-final.html" class="nav-brand">
+                <span class="brand-number">20</span>
+                <span class="brand-text">成长轨迹</span>
+            </a>
+            <div class="nav-links">
+                <a href="index-final.html" class="nav-link">时间轴</a>
+                <a href="thoughts-gallery.html" class="nav-link">思想感悟</a>
+                <a href="memories-stories.html" class="nav-link active">记忆与故事</a>
+                <a href="christmas-video.html" class="nav-link">圣诞树</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面头部 -->
+    <header class="page-header">
+        <div class="container">
+            <h1 class="page-title">记忆与成长故事</h1>
+            <p class="page-subtitle">珍藏生活中的美好瞬间，记录成长的心路历程</p>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="container">
+        <!-- 相册记忆部分 -->
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-images title-icon"></i>
+                相册记忆
+            </h2>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- 相册内容将通过JavaScript动态加载 -->
+            </div>
+        </section>
+
+        <!-- 成长故事部分 -->
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-book-open title-icon"></i>
+                成长故事
+            </h2>
+            <div class="stories-list" id="storiesList">
+                <!-- 成长故事内容将通过JavaScript动态加载 -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 响应式导航栏脚本 -->
+    <script src="responsive-nav.js" defer></script>
+    
+    <script src="data.js"></script>
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化导航栏滚动效果
+            initNavScroll();
+            
+            // 渲染内容
+            renderGallery();
+            renderStories();
+            
+            // 初始化照片轮播功能
+            initPhotoCarousels();
+        });
+
+        // 导航栏滚动效果
+        function initNavScroll() {
+            const nav = document.querySelector('.minimal-nav');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // 渲染相册记忆
+        function renderGallery() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            const galleryData = siteData.spheres.find(sphere => sphere.id === 'gallery');
+            
+            if (!galleryData || !galleryData.content.sections) return;
+            
+            let html = '';
+            
+            // 渲染每个分类
+            galleryData.content.sections.forEach(section => {
+                html += `
+                    <div class="section-category">
+                        <h3 class="category-title">${section.title}</h3>
+                        <div class="category-items">
+                `;
+                
+                section.items.forEach(item => {
+                    if (item.images) {
+                        // 有照片的项目 - 显示照片轮播
+                        html += `
+                            <div class="gallery-item with-image">
+                                <div class="gallery-image">
+                                    <div class="photo-carousel">
+                                        <div class="carousel-container">
+                                            ${item.images.map((image, index) => `
+                                                <img src="${image}" alt="${item.content}" class="memory-photo ${index === 0 ? 'active' : ''}" data-index="${index}">
+                                            `).join('')}
+                                        </div>
+                                        ${item.images.length > 1 ? `
+                                            <div class="carousel-controls">
+                                                <button class="carousel-prev"><i class="fas fa-chevron-left"></i></button>
+                                                <div class="carousel-indicators">
+                                                    ${item.images.map((_, index) => `
+                                                        <span class="indicator ${index === 0 ? 'active' : ''}" data-index="${index}"></span>
+                                                    `).join('')}
+                                                </div>
+                                                <button class="carousel-next"><i class="fas fa-chevron-right"></i></button>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                <div class="gallery-caption">
+                                    <h4>${item.content.split(' - ')[0]}</h4>
+                                    <p>${item.content.split(' - ')[1] || item.content}</p>
+                                    <small class="photo-count">${item.images.length} 张照片</small>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // 无照片的项目
+                        html += `
+                            <div class="gallery-item">
+                                <div class="gallery-image">
+                                    <i class="${item.icon}"></i>
+                                </div>
+                                <div class="gallery-caption">
+                                    <h4>${item.content.split(' - ')[0]}</h4>
+                                    <p>${item.content.split(' - ')[1] || item.content}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            galleryGrid.innerHTML = html;
+        }
+
+        // 渲染成长故事
+        function renderStories() {
+            const storiesList = document.getElementById('storiesList');
+            const storiesData = siteData.spheres.find(sphere => sphere.id === 'stories');
+            
+            if (!storiesData) return;
+            
+            storiesList.innerHTML = storiesData.content.items.map((item, index) => {
+                // 提取核心观点（以"核心："开头的内容）
+                const contentParts = item.content.split('核心：');
+                const mainContent = contentParts[0].trim();
+                const coreIdea = contentParts[1] ? contentParts[1].trim() : '';
+                
+                // 将主要内容按段落分割
+                const paragraphs = mainContent.split('\n').filter(p => p.trim());
+                
+                return `
+                    <div class="story-card">
+                        <h3 class="story-title">${item.title}</h3>
+                        <div class="story-content">
+                            ${paragraphs.map(paragraph => `
+                                <p>${paragraph}</p>
+                            `).join('')}
+                            ${coreIdea ? `
+                                <div class="story-highlight">
+                                    <strong>核心感悟：</strong>${coreIdea}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 初始化照片轮播功能
+        function initPhotoCarousels() {
+            const carousels = document.querySelectorAll('.photo-carousel');
+            
+            carousels.forEach(carousel => {
+                const container = carousel.querySelector('.carousel-container');
+                const photos = carousel.querySelectorAll('.memory-photo');
+                const prevBtn = carousel.querySelector('.carousel-prev');
+                const nextBtn = carousel.querySelector('.carousel-next');
+                const indicators = carousel.querySelectorAll('.indicator');
+                
+                let currentIndex = 0;
+                
+                // 显示指定索引的照片
+                function showPhoto(index) {
+                    photos.forEach(photo => photo.classList.remove('active'));
+                    indicators.forEach(indicator => indicator.classList.remove('active'));
+                    
+                    photos[index].classList.add('active');
+                    indicators[index].classList.add('active');
+                    currentIndex = index;
+                }
+                
+                // 下一张照片
+                function nextPhoto() {
+                    let nextIndex = (currentIndex + 1) % photos.length;
+                    showPhoto(nextIndex);
+                }
+                
+                // 上一张照片
+                function prevPhoto() {
+                    let prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+                    showPhoto(prevIndex);
+                }
+                
+                // 添加事件监听器
+                if (prevBtn) prevBtn.addEventListener('click', prevPhoto);
+                if (nextBtn) nextBtn.addEventListener('click', nextPhoto);
+                
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => showPhoto(index));
+                });
+                
+                // 自动轮播（每5秒切换一次）
+                let autoPlay = setInterval(nextPhoto, 5000);
+                
+                // 鼠标悬停时暂停自动轮播
+                carousel.addEventListener('mouseenter', () => {
+                    clearInterval(autoPlay);
+                });
+                
+                carousel.addEventListener('mouseleave', () => {
+                    autoPlay = setInterval(nextPhoto, 5000);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
